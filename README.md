@@ -1,2 +1,13 @@
-# contextx
-Go package contextx provides generic helpers extending the standard context package
+# Go package contextx provides generic helpers extending the standard context package
+
+[![License MIT](https://img.shields.io/badge/license-MIT-royalblue.svg)](LICENSE)
+[![Go version](https://img.shields.io/github/go-mod/go-version/powerman/contextx?color=blue)](https://go.dev/)
+[![Test](https://img.shields.io/github/actions/workflow/status/powerman/contextx/test.yml?label=test)](https://github.com/powerman/contextx/actions/workflows/test.yml)
+[![Coverage Status](https://raw.githubusercontent.com/powerman/contextx/gh-badges/coverage.svg)](https://github.com/powerman/contextx/actions/workflows/test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/powerman/contextx)](https://goreportcard.com/report/github.com/powerman/contextx)
+[![Release](https://img.shields.io/github/v/release/powerman/contextx?color=blue)](https://github.com/powerman/contextx/releases/latest)
+[![Go Reference](https://pkg.go.dev/badge/github.com/powerman/contextx.svg)](https://pkg.go.dev/github.com/powerman/contextx)
+
+![Linux | amd64 arm64 armv7 ppc64le s390x riscv64](https://img.shields.io/badge/Linux-amd64%20arm64%20armv7%20ppc64le%20s390x%20riscv64-royalblue)
+![macOS | amd64 arm64](https://img.shields.io/badge/macOS-amd64%20arm64-royalblue)
+![Windows | amd64 arm64](https://img.shields.io/badge/Windows-amd64%20arm64-royalblue)
