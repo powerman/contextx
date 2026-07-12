@@ -15,15 +15,15 @@ func TestSleep(tt *testing.T) {
 	t := check.T(tt)
 
 	// Returns nil once the duration elapses.
-	t.Nil(contextx.Sleep(context.Background(), time.Millisecond))
+	t.Nil(contextx.Sleep(tt.Context(), time.Millisecond))
 
 	// Returns the context error when cancelled before the duration elapses.
-	cancelled, cancel := context.WithCancel(context.Background())
+	cancelled, cancel := context.WithCancel(tt.Context())
 	cancel()
 	t.Err(contextx.Sleep(cancelled, time.Hour), context.Canceled)
 
 	// Reports a deadline as the context error too.
-	expired, cancelExpired := context.WithTimeout(context.Background(), time.Nanosecond)
+	expired, cancelExpired := context.WithTimeout(tt.Context(), time.Nanosecond)
 	tt.Cleanup(cancelExpired)
 	t.Err(contextx.Sleep(expired, time.Hour), context.DeadlineExceeded)
 }
