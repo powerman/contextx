@@ -40,11 +40,11 @@ func open(ctx context.Context) bool {
 
 func TestMergeValues(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	parent := context.WithValue(tt.Context(), ctxKey("a"), "parent-a")
+	parent := context.WithValue(t.Context(), ctxKey("a"), "parent-a")
 	parent = context.WithValue(parent, ctxKey("shared"), "parent-shared")
-	extra := context.WithValue(tt.Context(), ctxKey("b"), "extra-b")
+	extra := context.WithValue(t.Context(), ctxKey("b"), "extra-b")
 	extra = context.WithValue(extra, ctxKey("shared"), "extra-shared")
 
 	ctx := contextx.MergeValues(parent, extra)
@@ -57,12 +57,12 @@ func TestMergeValues(tt *testing.T) {
 
 func TestMergeValues_cancellation_from_parent_only(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	parentCtx, cancelParent := context.WithCancel(tt.Context())
-	tt.Cleanup(cancelParent)
-	extraCtx, cancelExtra := context.WithCancel(tt.Context())
-	tt.Cleanup(cancelExtra)
+	parentCtx, cancelParent := context.WithCancel(t.Context())
+	t.Cleanup(cancelParent)
+	extraCtx, cancelExtra := context.WithCancel(t.Context())
+	t.Cleanup(cancelExtra)
 
 	ctx := contextx.MergeValues(parentCtx, extraCtx)
 
@@ -76,14 +76,14 @@ func TestMergeValues_cancellation_from_parent_only(tt *testing.T) {
 
 func TestMergeCancel_via_parent(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	parent, cancelParent := context.WithCancel(tt.Context())
-	tt.Cleanup(cancelParent)
+	parent, cancelParent := context.WithCancel(t.Context())
+	t.Cleanup(cancelParent)
 
 	// extra is non-cancellable, exercising AfterFunc's no-registration path.
-	ctx, cancel := contextx.MergeCancel(parent, tt.Context())
-	tt.Cleanup(cancel)
+	ctx, cancel := contextx.MergeCancel(parent, t.Context())
+	t.Cleanup(cancel)
 
 	t.True(open(ctx))
 	cancelParent()
@@ -93,13 +93,13 @@ func TestMergeCancel_via_parent(tt *testing.T) {
 
 func TestMergeCancel_via_extra(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	extra, cancelExtra := context.WithCancelCause(tt.Context())
-	tt.Cleanup(func() { cancelExtra(context.Canceled) })
+	extra, cancelExtra := context.WithCancelCause(t.Context())
+	t.Cleanup(func() { cancelExtra(context.Canceled) })
 
-	ctx, cancel := contextx.MergeCancel(tt.Context(), extra)
-	tt.Cleanup(cancel)
+	ctx, cancel := contextx.MergeCancel(t.Context(), extra)
+	t.Cleanup(cancel)
 
 	t.True(open(ctx))
 	cancelExtra(errCause)
@@ -114,9 +114,9 @@ func TestMergeCancel_via_extra(tt *testing.T) {
 // cancel can close the merged context.
 func TestMergeCancel_via_func(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	ctx, cancel := contextx.MergeCancel(tt.Context(), tt.Context())
+	ctx, cancel := contextx.MergeCancel(t.Context(), t.Context())
 
 	t.True(open(ctx))
 	cancel()
@@ -126,37 +126,37 @@ func TestMergeCancel_via_func(tt *testing.T) {
 
 func TestMergeCancel_values_from_parent_only(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	parent := context.WithValue(tt.Context(), ctxKey("a"), "parent-a")
-	extra := context.WithValue(tt.Context(), ctxKey("b"), "extra-b")
+	parent := context.WithValue(t.Context(), ctxKey("a"), "parent-a")
+	extra := context.WithValue(t.Context(), ctxKey("b"), "extra-b")
 
 	ctx, cancel := contextx.MergeCancel(parent, extra)
-	tt.Cleanup(cancel)
+	t.Cleanup(cancel)
 
 	t.Equal(ctx.Value(ctxKey("a")), "parent-a")
 	t.Nil(ctx.Value(ctxKey("b"))) // extra contributes cancellation, not values
 }
 
-func TestMergeCancel_deadline(tt *testing.T) {
-	tt.Parallel()
+func TestMergeCancel_deadline(t *testing.T) {
+	t.Parallel()
 
 	base := time.Now()
 	early := base.Add(time.Minute)
 	late := base.Add(time.Hour)
 
-	at := func(tt *testing.T, deadline time.Time) context.Context {
-		tt.Helper()
-		ctx, cancel := context.WithDeadline(tt.Context(), deadline)
-		tt.Cleanup(cancel)
+	at := func(t *check.TB, deadline time.Time) context.Context {
+		t.Helper()
+		ctx, cancel := context.WithDeadline(t.Context(), deadline)
+		t.Cleanup(cancel)
 		return ctx
 	}
-	mk := func(tt *testing.T, deadline *time.Time) context.Context {
-		tt.Helper()
+	mk := func(t *check.TB, deadline *time.Time) context.Context {
+		t.Helper()
 		if deadline == nil {
-			return tt.Context()
+			return t.Context()
 		}
-		return at(tt, *deadline)
+		return at(t, *deadline)
 	}
 
 	testCases := []struct {
@@ -171,12 +171,12 @@ func TestMergeCancel_deadline(tt *testing.T) {
 		{"extra-earlier", &late, &early, &early},
 	}
 	for _, tc := range testCases {
-		tt.Run(tc.name, func(tt *testing.T) {
+		t.Run(tc.name, func(tt *testing.T) {
 			tt.Parallel()
-			t := check.T(tt)
+			t := check.Must(tt)
 
-			ctx, cancel := contextx.MergeCancel(mk(tt, tc.parent), mk(tt, tc.extra))
-			tt.Cleanup(cancel)
+			ctx, cancel := contextx.MergeCancel(mk(t, tc.parent), mk(t, tc.extra))
+			t.Cleanup(cancel)
 
 			deadline, ok := ctx.Deadline()
 			t.Equal(ok, tc.want != nil)
@@ -189,20 +189,20 @@ func TestMergeCancel_deadline(tt *testing.T) {
 
 func TestMerge(tt *testing.T) {
 	tt.Parallel()
-	t := check.T(tt)
+	t := check.Must(tt)
 
-	parent := context.WithValue(tt.Context(), ctxKey("a"), "parent-a")
+	parent := context.WithValue(t.Context(), ctxKey("a"), "parent-a")
 	parent = context.WithValue(parent, ctxKey("shared"), "parent-shared")
-	extra := context.WithValue(tt.Context(), ctxKey("b"), "extra-b")
+	extra := context.WithValue(t.Context(), ctxKey("b"), "extra-b")
 	extra = context.WithValue(extra, ctxKey("shared"), "extra-shared")
 
 	parentCtx, cancelParent := context.WithCancel(parent)
-	tt.Cleanup(cancelParent)
+	t.Cleanup(cancelParent)
 	extraCtx, cancelExtra := context.WithCancel(extra)
-	tt.Cleanup(cancelExtra)
+	t.Cleanup(cancelExtra)
 
 	ctx, cancel := contextx.Merge(parentCtx, extraCtx)
-	tt.Cleanup(cancel)
+	t.Cleanup(cancel)
 
 	// Values come from both, with parent taking precedence on shared keys.
 	t.Equal(ctx.Value(ctxKey("a")), "parent-a")
