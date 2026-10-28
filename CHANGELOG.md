@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-10-28
+
+### 🔔 Changed
+
+- Require Go 1.26 by @powerman in [2ddbdc3]
+
+### 📦️ Dependencies
+
+- **(deps)** Upgrade go and golangci-lint by @powerman in [7fc5486]
+- **(deps)** Upgrade go modules by @powerman in [d0cf68b]
+- **(deps)** Upgrade go and golangci-lint by @powerman in [8da5885]
+- **(deps)** Mise up by @powerman in [567fccb]
+
+[0.2.0]: https://github.com/powerman/contextx/compare/v0.1.1..v0.2.0
+[7fc5486]: https://github.com/powerman/contextx/commit/7fc54863eb02a045530d6cf67aa694366e504d3d
+[d0cf68b]: https://github.com/powerman/contextx/commit/d0cf68b2d83b6cf9ff8af453f9541a56027e25b7
+[8da5885]: https://github.com/powerman/contextx/commit/8da5885f9281d3637b31fa0e652a0bab205a182f
+[2ddbdc3]: https://github.com/powerman/contextx/commit/2ddbdc322bfae6b71c93dd095380c7dee3e11acb
+[567fccb]: https://github.com/powerman/contextx/commit/567fccb5830cfee283425f731a8140c16b71c816
+
 ## [0.1.1] - 2026-07-12
 
 [0.1.1]: https://github.com/powerman/contextx/compare/%40%7B10year%7D..v0.1.1
